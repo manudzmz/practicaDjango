@@ -1,14 +1,13 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Wordplease</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block body %}
     <h1>Bienvenido a Wordplease</h1>
     <p>Blogs para todo el mundo</p>
-</body>
+    {% if posts_list|length > 0 %}
+        <h2>Últimos posts publicados</h2>
+        {% include "post/includes/posts_display.html" %}
+    {% else %}
+        {% include "post/includes/no_posts_msg.html" %}
+    {% endif %}
+{% endblock %}
 </html>
