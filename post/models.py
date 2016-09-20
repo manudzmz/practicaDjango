@@ -10,3 +10,6 @@ class Post(models.Model):
     cuerpo = models.TextField()
     url = models.URLField()
     fec_publicacion = models.DateTimeField("fecha de publicación")
+
+    def __str__(self):  # mipost.__str__()
+        return self.titulo
