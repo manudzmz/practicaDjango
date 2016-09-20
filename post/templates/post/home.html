@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h1>Bienvenido a Wordplease</h1>
+    <p>Blogs para todo el mundo</p>
+
+    {% if posts_list|length > 0 %}
+        <h2>Últimos posts publicados</h2>
+        {% include "posts/includes/posts_display.html" %}
+    {% else %}
+        {% include "photos/includes/no_posts_msg.html" %}
+    {% endif %}
+{% endblock %}
