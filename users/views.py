@@ -4,6 +4,9 @@ from django.shortcuts import render, redirect
 
 
 # Create your views here.
+from users.forms import LoginForm
+
+
 def login(request):
     """
     Presenta el formulario de login y gestiona el login de un usuario
@@ -11,6 +14,7 @@ def login(request):
     :return: objeto HttpResponse con los datos de la respuesta
     """
     error_message = ""
+    login_form = LoginForm(request.POST) if request.method == "POST" else LoginForm()
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("pwd")
@@ -24,7 +28,8 @@ def login(request):
             else:
                 error_message = "Cuenta de usuario inactiva"
 
-    return render(request, "users/login.html", {"error": error_message})
+    context = {"error": error_message, "form": login_form}
+    return render(request, "users/login.html", context)
 
 
 def logout(request):
