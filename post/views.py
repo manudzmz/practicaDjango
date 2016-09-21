@@ -5,7 +5,9 @@ from django.shortcuts import render
 # Create your views here.
 # from django.views import View
 import users
+from post.forms import PostForm
 from post.models import Post
+from django.contrib.auth.decorators import login_required
 
 
 # class HomeView(View):
@@ -59,3 +61,26 @@ def user_posts(request, blogger):
     context = {"posts_list": posts_list}
     return render(request, 'post/user_posts.html', context)
 
+
+@login_required()
+def create_post(request):
+    """
+    Muestra el formulario para añadir un nuevo post al blog. Si es una peticion POST la valida y la crea.
+    :param request: objeto HttpRequest con los datos de la peticion
+    :return:
+    """
+    message = None
+    if request.method == "POST":
+        post_with_user = Post(owner=request.user)
+        post_form = PostForm(request.POST, instance=post_with_user)
+        if post_form.is_valid():
+            new_post = post_form.save()
+            post_form = PostForm()
+            message = "Post creado satisfactoriamente. <a href='/blogs/{0}/{1}'></a>".format(new_post.owner.username,
+                                                                                             new_post.pk)
+    else:
+        post_form = PostForm()
+
+
+    context = {"form": post_form, "message": message}
+    return render(request, "post/new_post.html", context)
