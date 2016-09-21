@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <h1>Bienvenido a Wordplease</h1>
-    <p>Blogs para todo el mundo</p>
+    <h1>Blog de {{ post.owner.username }}</h1>
     {% if posts_list|length > 0 %}
         <h2>Últimos posts publicados</h2>
         {% include "post/includes/posts_display.html" %}
     {% else %}
-        {% include "post/includes/no_posts_msg.html" %}
+        {% include "post/includes/user_with_no_posts.html" %}
     aa{% endif %}
 {% endblock %}
 </html>

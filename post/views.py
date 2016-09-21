@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 # from django.views import View
-
+import users
 from post.models import Post
 
 
@@ -46,3 +46,16 @@ def post_detail(request, pk):
     post = possible_posts[0]
     context = {'post': post}
     return render(request, 'post/post_detail.html', context)
+
+
+def user_posts(request, blogger):
+    """
+    Muestra la lista de posts del blog de un usuario
+    :param request: objeto HttpRequest con los datos de la peticion
+    :param blogger: nombre de usuario de la persona cuyo blog queremos ver
+    :return:
+    """
+    posts_list = Post.objects.all().order_by('-fec_publicacion').select_related("owner")
+    context = {"posts_list": posts_list}
+    return render(request, 'post/user_posts.html', context)
+
