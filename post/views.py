@@ -25,7 +25,7 @@ def home(request):
     :param request: objeto HttpRequest con los datos de la peticion
     :return:
     """
-    posts = Post.objects.all().order_by('-fec_publicacion')
+    posts = Post.objects.all().order_by('-fec_publicacion').select_related("owner")
     context = {'posts_list': posts[:5]}
     return render(request, "post/home.html", context)
 
@@ -37,7 +37,7 @@ def post_detail(request, pk):
     :param pk: clave primaria del post a recuperar
     :return:
     """
-    possible_posts = Post.objects.filter(pk=pk)
+    possible_posts = Post.objects.filter(pk=pk).select_related("owner")
     if len(possible_posts) == 0:
         return HttpResponseNotFound("El post solicitado no existe")
     elif len(possible_posts) > 1:
