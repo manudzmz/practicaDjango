@@ -42,16 +42,19 @@ class PostDetailView(View):
         return render(request, 'post/post_detail.html', context)
 
 
-def user_posts(request, blogger):
+class UserPostsView(ListView):
     """
     Muestra la lista de posts del blog de un usuario
     :param request: objeto HttpRequest con los datos de la peticion
     :param blogger: nombre de usuario de la persona cuyo blog queremos ver
     :return:
     """
-    posts_list = Post.objects.all().order_by('-fec_publicacion').select_related("owner")
-    context = {"posts_list": posts_list}
-    return render(request, 'post/user_posts.html', context)
+    model = Post
+    template_name = 'post/user_posts.html'
+
+    def get_queryset(self):
+        result = super().get_queryset().filter(owner__username=self.kwargs["blogger"]).order_by('-fec_publicacion')
+        return result
 
 
 class CreatePostView(View):
@@ -85,14 +88,3 @@ class CreatePostView(View):
 
         context = {"form": post_form, "message": message}
         return render(request, "post/new_post.html", context)
-
-
-class UserPostsView(ListView):
-    model = Post
-    template_name = 'post/user_posts.html'
-
-    def get(self, request, blogger):
-        result = super().get(request)
-        return result
-
-

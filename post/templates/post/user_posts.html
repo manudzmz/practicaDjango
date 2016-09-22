@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <h1>Blog de {{ post.owner.username }}</h1>
+    <h1>Blog de {{ blogger }}</h1>
     {% include "post/includes/post_list_if.html" with posts_list=object_list%}
 {% endblock %}
