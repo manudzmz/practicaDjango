@@ -3,11 +3,5 @@
 {% block body %}
     <h1>Bienvenido a Wordplease</h1>
     <p>Blogs para todo el mundo</p>
-    {% if posts_list|length > 0 %}
-        <h2>Últimos posts publicados</h2>
-        {% include "post/includes/posts_display.html" %}
-    {% else %}
-        {% include "post/includes/no_posts_msg.html" %}
-    aa{% endif %}
+    {% include "post/includes/post_list_if.html" %}
 {% endblock %}
-</html>

@@ -2,11 +2,5 @@
 
 {% block body %}
     <h1>Blog de {{ post.owner.username }}</h1>
-    {% if object_list|length > 0 %}
-        <h2>Últimos posts publicados</h2>
-        {% include "post/includes/posts_display.html" %}
-    {% else %}
-        {% include "post/includes/user_with_no_posts.html" %}
-    {% endif %}
+    {% include "post/includes/post_list_if.html" with posts_list=object_list%}
 {% endblock %}
-</html>
