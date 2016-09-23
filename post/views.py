@@ -1,6 +1,9 @@
+from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
+from django.utils.datetime_safe import datetime
 from django.views import View
 from django.views.generic import ListView
 from post.forms import PostForm
@@ -18,20 +21,25 @@ class HomeView(View):
         :param request: objeto HttpRequest con los datos de la peticion
         :return:
         """
-        posts = Post.objects.all().order_by('-fec_publicacion').select_related("owner")
+        posts = Post.objects.all().filter(fec_publicacion__lte=datetime.now()).order_by(
+            '-fec_publicacion').select_related("owner")
         context = {'posts_list': posts[:5]}
         return render(request, "post/home.html", context)
 
 
 class PostDetailView(View):
-    def get(self, request, pk):
+    def get(self, request, pk, blogger):
         """
         Renderiza el detalle de un post
         :param request: objeto HttpRequest con los datos de la peticion
         :param pk: clave primaria del post a recuperar
         :return:
         """
-        possible_posts = Post.objects.filter(pk=pk).select_related("owner")
+        if request.user.is_authenticated() and request.user.username == blogger:
+            possible_posts = Post.objects.filter(pk=pk).select_related("owner")
+        else:
+            possible_posts = Post.objects.filter(Q(pk=pk) & Q(fec_publicacion__lte=datetime.now())).select_related(
+                "owner")
         if len(possible_posts) == 0:
             return HttpResponseNotFound("El post solicitado no existe")
         elif len(possible_posts) > 1:
@@ -53,7 +61,16 @@ class UserPostsView(ListView):
     template_name = 'post/user_posts.html'
 
     def get_queryset(self):
-        result = super().get_queryset().filter(owner__username=self.kwargs["blogger"]).order_by('-fec_publicacion')
+        if User.objects.filter(username=self.kwargs["blogger"]).exists():
+            if self.request.user.is_authenticated() and self.request.user.username == self.kwargs["blogger"]:
+                result = super().get_queryset().filter(owner__username=self.kwargs["blogger"]).order_by(
+                    '-fec_publicacion')
+            else:
+                result = super().get_queryset().filter(
+                    Q(owner__username=self.kwargs["blogger"]) & Q(fec_publicacion__lte=datetime.now())).order_by(
+                    '-fec_publicacion')
+        else:
+            result = "El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"])
         return result
 
 
