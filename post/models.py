@@ -5,7 +5,7 @@ from django.db import models
 # Create your models here.
 class Post(models.Model):
     owner = models.ForeignKey(User)
-    titulo = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=150)
     intro = models.CharField(max_length=150)
     cuerpo = models.TextField()
     url = models.URLField()

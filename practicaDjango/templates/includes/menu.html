@@ -9,5 +9,7 @@
     | {{ user }}
 {% else %}
     <a href="{% url 'users_login' %}">Login</a>
+    |
+    <a href="{% url 'users_signup' %}">Unirse</a>
 {% endif %}
 <hr>

@@ -1,17 +1,6 @@
 {% for post in posts_list %}
 <div class="art-container">
 			<article class="articulo">
-				<div class="author-container">
-					<img class="author-img" src="" alt="" height="">
-					<div class="info-author">
-						<div>
-						<span class="author-name">{{ post.owner.first_name }} {{ post.owner.last_name}}</span>
-						</div>
-						<div>
-							<time datetime="2016-08-01 19:08:00">{{ post.fec_publicacion }}</time>
-						</div>
-					</div>
-				</div>
 				<div class="visual-container">
 						<img class="visual" src="{{ post.url }}" alt="Imagen" height="200">
 				</div>

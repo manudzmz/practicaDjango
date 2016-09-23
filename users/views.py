@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.views import View
 
-from users.forms import LoginForm
+from users.forms import LoginForm, SignupForm
 
 
 class LoginView(View):
@@ -68,3 +68,32 @@ class BlogsView(View):
         bloggers_list = User.objects.all()
         context = {"bloggers": bloggers_list}
         return render(request, "users/blogs.html", context)
+
+
+class SignupView(View):
+    def get(self, request):
+        """
+
+        :param request:
+        :return:
+        """
+        error_message = ""
+        signup_form = SignupForm()
+        context = {"error": error_message, "form": signup_form}
+        return render(request, "users/signup.html", context)
+
+    def post(self, request):
+        """
+
+        :param request:
+        :return:
+        """
+        message = None
+        signup_form = SignupForm(request.POST)
+        if signup_form.is_valid():
+            signup_form.save()
+            signup_form = SignupForm()
+            message = "Usuario dado de alta satisfactoriamente."
+
+        context = {"message": message, "form": signup_form}
+        return render(request, "users/signup.html", context)

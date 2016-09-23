@@ -102,6 +102,5 @@ class CreatePostView(View):
             post_form = PostForm()
             message = "Post creado satisfactoriamente. <a href='/blogs/{0}/{1}'></a>".format(new_post.owner.username,
                                                                                              new_post.pk)
-
         context = {"form": post_form, "message": message}
         return render(request, "post/new_post.html", context)
