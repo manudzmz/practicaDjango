@@ -7,6 +7,6 @@
 {% block body %}
     <h1>Blogs actuales</h1>
     {% for blog in bloggers %}
-        <a href="/blogs/{{ blog }}"><h4>{{ blog }}</h4></a>
+        <a href="{% url 'post_usersposts' blog %}"><h4>{{ blog }}</h4></a>
     {% endfor %}
 {% endblock %}
