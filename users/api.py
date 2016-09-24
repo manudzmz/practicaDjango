@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_202_ACCEPTED, HTTP_204_NO_CONTENT
 
 from users.serializers import BlogsSerializer, UserSerializer
 
@@ -50,4 +50,18 @@ class UserDetailAPI(APIView):
         user = get_object_or_404(User, username=blogger)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+    def put(self, request, blogger):
+        user = get_object_or_404(User, username=blogger)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, blogger):
+        user = get_object_or_404(User, username=blogger)
+        user.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
 
