@@ -33,12 +33,13 @@ class PostDetailView(View):
         Renderiza el detalle de un post
         :param request: objeto HttpRequest con los datos de la peticion
         :param pk: clave primaria del post a recuperar
+        :param blogger: usuario autor del post
         :return:
         """
         if request.user.is_authenticated() and request.user.username == blogger:
-            possible_posts = Post.objects.filter(pk=pk).select_related("owner")
+            possible_posts = Post.objects.filter(Q(pk=pk) & Q(owner__username=blogger)).select_related("owner")
         else:
-            possible_posts = Post.objects.filter(Q(pk=pk) & Q(fec_publicacion__lte=datetime.now())).select_related(
+            possible_posts = Post.objects.filter(Q(pk=pk) & Q(owner__username=blogger) & Q(fec_publicacion__lte=datetime.now())).select_related(
                 "owner")
         if len(possible_posts) == 0:
             return HttpResponseNotFound("El post solicitado no existe")
