@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
@@ -91,6 +92,7 @@ class SignupView(View):
         message = None
         signup_form = SignupForm(request.POST)
         if signup_form.is_valid():
+            signup_form.cleaned_data["password"] = make_password(signup_form.cleaned_data["password"])
             signup_form.save()
             signup_form = SignupForm()
             message = "Usuario dado de alta satisfactoriamente."
