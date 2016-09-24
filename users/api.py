@@ -24,7 +24,7 @@ class SignupAPI(APIView):
     """
 
     def post(self, request):
-        serializer = UserSerializer (data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=HTTP_201_CREATED)

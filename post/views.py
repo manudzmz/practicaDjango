@@ -66,13 +66,16 @@ class UserPostsView(ListView):
             if self.request.user.is_authenticated() and self.request.user.username == self.kwargs["blogger"]:
                 result = super().get_queryset().filter(owner__username=self.kwargs["blogger"]).order_by(
                     '-fec_publicacion')
+                return result
             else:
                 result = super().get_queryset().filter(
                     Q(owner__username=self.kwargs["blogger"]) & Q(fec_publicacion__lte=datetime.now())).order_by(
                     '-fec_publicacion')
-        else:
-            result = "El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"])
-        return result
+                return result
+        # else:
+        #     # result = "El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"])
+        #     print("El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"]))
+
 
 
 class CreatePostView(View):

@@ -1,12 +1,9 @@
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from post.models import Post
-from post.serializers import UserPostsSerializer
-from rest_framework.status import HTTP_404_NOT_FOUND
+from post.serializers import UserPostsSerializer, UserPostsListsSerializer
 
 
 class UserPostsAPI(ListAPIView):
@@ -15,12 +12,19 @@ class UserPostsAPI(ListAPIView):
     """
 
     queryset = Post.objects.all()
-    serializer_class = UserPostsSerializer
+    serializer_class = UserPostsListsSerializer
 
     def list(self, request, blogger):
         queryset = self.get_queryset().filter(owner__username=blogger).order_by(
             '-fec_publicacion')
-        serializer = UserPostsSerializer(queryset, many=True)
+        # serializer = UserPostsSerializer(queryset, many=True)
+        # return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
         # def get(self, request):
@@ -35,8 +39,6 @@ class PostDetailAPI(RetrieveUpdateDestroyAPIView):
 
     def retrieve(self, request, pk, blogger):
         queryset = self.get_queryset().filter(Q(pk=pk) & Q(owner__username=blogger))
-        serializer = UserPostsSerializer(queryset, many=True)
-        if not serializer.data:
-            return Response(status=HTTP_404_NOT_FOUND)
-        else:
-            return Response(serializer.data)
+        instance = get_object_or_404(queryset)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
