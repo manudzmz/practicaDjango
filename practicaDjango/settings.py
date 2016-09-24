@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'practicaDjango',
     'users',
     'categories',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
