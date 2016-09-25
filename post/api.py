@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.utils.datetime_safe import datetime
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.response import Response
 
@@ -15,8 +16,14 @@ class UserPostsAPI(ListAPIView):
     serializer_class = UserPostsListsSerializer
 
     def list(self, request, blogger):
-        queryset = self.get_queryset().filter(owner__username=blogger).order_by(
-            '-fec_publicacion')
+        if request.user.is_authenticated and (request.user.username == blogger or request.user.is_superuser):
+            queryset = self.get_queryset().filter(owner__username=blogger).order_by(
+                '-fec_publicacion')
+        else:
+            queryset = self.get_queryset().filter(
+                Q(owner__username=blogger) & Q(fec_publicacion__lte=datetime.now())).order_by(
+                '-fec_publicacion')
+
         # serializer = UserPostsSerializer(queryset, many=True)
         # return Response(serializer.data)
         page = self.paginate_queryset(queryset)

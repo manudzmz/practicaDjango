@@ -27,6 +27,18 @@ class HomeView(View):
         return render(request, "post/home.html", context)
 
 
+class PostQueryset(object):
+    @staticmethod
+    def get_postdetail_by_user(user, pk, blogger):
+        if user.is_authenticated() and user.username == blogger:
+            possible_posts = Post.objects.filter(Q(pk=pk) & Q(owner__username=blogger)).select_related("owner")
+        else:
+            possible_posts = Post.objects.filter(
+                Q(pk=pk) & Q(owner__username=blogger) & Q(fec_publicacion__lte=datetime.now())).select_related(
+                "owner")
+        return possible_posts
+
+
 class PostDetailView(View):
     def get(self, request, pk, blogger):
         """
@@ -36,11 +48,8 @@ class PostDetailView(View):
         :param blogger: usuario autor del post
         :return:
         """
-        if request.user.is_authenticated() and request.user.username == blogger:
-            possible_posts = Post.objects.filter(Q(pk=pk) & Q(owner__username=blogger)).select_related("owner")
-        else:
-            possible_posts = Post.objects.filter(Q(pk=pk) & Q(owner__username=blogger) & Q(fec_publicacion__lte=datetime.now())).select_related(
-                "owner")
+        possible_posts = PostQueryset.get_postdetail_by_user(request.user, pk, blogger)
+
         if len(possible_posts) == 0:
             return HttpResponseNotFound("El post solicitado no existe")
         elif len(possible_posts) > 1:
@@ -72,10 +81,9 @@ class UserPostsView(ListView):
                     Q(owner__username=self.kwargs["blogger"]) & Q(fec_publicacion__lte=datetime.now())).order_by(
                     '-fec_publicacion')
                 return result
-        # else:
-        #     # result = "El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"])
-        #     print("El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"]))
-
+                # else:
+                #     # result = "El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"])
+                #     print("El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"]))
 
 
 class CreatePostView(View):
