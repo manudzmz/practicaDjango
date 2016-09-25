@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 from users.models import Profile
 
-BLOG_URL = "http://127.0.0.1:8000/blogs/"
+BLOG_URL = "http://127.0.0.1:8000/api/1.0/blogs/"
 
 
 class BlogsSerializer(serializers.Serializer):
