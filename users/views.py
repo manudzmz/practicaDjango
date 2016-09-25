@@ -74,7 +74,7 @@ class BlogsView(View):
 class SignupView(View):
     def get(self, request):
         """
-
+        Muestra el formulario de registro de nuevos usuarios
         :param request:
         :return:
         """
@@ -85,14 +85,15 @@ class SignupView(View):
 
     def post(self, request):
         """
-
+        Valida los datos de registro de un nuevo usuario y lo crea si son correctos
         :param request:
         :return:
         """
         message = None
         signup_form = SignupForm(request.POST)
         if signup_form.is_valid():
-            signup_form.cleaned_data["password"] = make_password(signup_form.cleaned_data["password"])
+            encrypted_pass = make_password(signup_form.cleaned_data["password"])
+            signup_form.instance.password = encrypted_pass
             signup_form.save()
             signup_form = SignupForm()
             message = "Usuario dado de alta satisfactoriamente."

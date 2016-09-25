@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
-from post.api import UserPostsAPI, PostDetailAPI, CreatePostAPI
+from post.api import UserPostsAPI, CreatePostAPI, PostDetailAPI
 from post.views import HomeView, PostDetailView, UserPostsView, CreatePostView
+
 
 urlpatterns = [
     #Web URLs

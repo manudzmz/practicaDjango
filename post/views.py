@@ -70,6 +70,14 @@ class UserPostsView(ListView):
     model = Post
     template_name = 'post/user_posts.html'
 
+    def get(self, request, *args, **kwargs):
+        if not User.objects.filter(username=self.kwargs["blogger"]).exists():
+            return HttpResponseNotFound("No existe ningún blog con este nombre")
+        else:
+            posts = self.get_queryset()
+            context = {'posts_list': posts, 'blogger': self.kwargs["blogger"]}
+            return render(request, 'post/user_posts.html', context)
+
     def get_queryset(self):
         if User.objects.filter(username=self.kwargs["blogger"]).exists():
             if self.request.user.is_authenticated() and self.request.user.username == self.kwargs["blogger"]:
@@ -81,9 +89,6 @@ class UserPostsView(ListView):
                     Q(owner__username=self.kwargs["blogger"]) & Q(fec_publicacion__lte=datetime.now())).order_by(
                     '-fec_publicacion')
                 return result
-                # else:
-                #     # result = "El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"])
-                #     print("El usuario {0} no tiene ningún blog".format(self.kwargs["blogger"]))
 
 
 class CreatePostView(View):
@@ -112,7 +117,6 @@ class CreatePostView(View):
         if post_form.is_valid():
             new_post = post_form.save()
             post_form = PostForm()
-            message = "Post creado satisfactoriamente. <a href='/blogs/{0}/{1}'></a>".format(new_post.owner.username,
-                                                                                             new_post.pk)
+            message = "Post creado satisfactoriamente."
         context = {"form": post_form, "message": message}
         return render(request, "post/new_post.html", context)

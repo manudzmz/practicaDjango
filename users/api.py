@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from rest_framework import filters
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST,  HTTP_202_ACCEPTED, \
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_202_ACCEPTED, \
     HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
@@ -14,6 +15,9 @@ class BlogsListAPI(APIView):
     """
     Endpoint que muestra el listado de blogs de la plataforma
     """
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter,)
+    ordering_fields = ('username',)
+    search_fields = ('username',)
 
     def get(self, request):
         users = User.objects.all()
@@ -58,5 +62,3 @@ class UserDetailAPI(APIView):
         self.check_object_permissions(request, user)
         user.delete()
         return Response(status=HTTP_204_NO_CONTENT)
-
-

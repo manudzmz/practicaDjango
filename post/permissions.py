@@ -1,9 +1,8 @@
 from django.utils import timezone
 from rest_framework.permissions import BasePermission
-from django.utils.datetime_safe import datetime
 
 
-class PostsPermission(BasePermission):
+class PostDetailPermission(BasePermission):
     def has_permission(self, request, view):
         """
         Indica si un usuario puede acceder a la vista que quiere
