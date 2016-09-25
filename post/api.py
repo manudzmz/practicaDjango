@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.datetime_safe import datetime
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404, CreateAPIView
@@ -5,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from post.models import Post
+from post.permissions import PostsPermission
 from post.serializers import UserPostsSerializer, UserPostsListsSerializer
 
 
@@ -42,17 +44,24 @@ class UserPostsAPI(ListAPIView):
 
 
 class PostDetailAPI(RetrieveUpdateDestroyAPIView):
+    """
+    Endpoint de detalle del post de un usuario
+    """
     queryset = Post.objects.all()
     serializer_class = UserPostsSerializer
+    permission_classes = (PostsPermission,)
 
     def retrieve(self, request, pk, blogger):
-        queryset = self.get_queryset().filter(Q(pk=pk) & Q(owner__username=blogger))
-        instance = get_object_or_404(queryset)
-        serializer = self.get_serializer(instance)
+        post = get_object_or_404(Post, pk=pk, owner__username=blogger)
+        self.check_object_permissions(request, post)
+        serializer = UserPostsSerializer(post)
         return Response(serializer.data)
 
     def perform_update(self, serializer):
-        return serializer.save(owner=self.request.user)
+        if not self.request.user.is_superuser:
+            return serializer.save(owner=self.request.user)
+        else:
+            return serializer.save()
 
 
 class CreatePostAPI(CreateAPIView):
