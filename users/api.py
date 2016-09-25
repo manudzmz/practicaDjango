@@ -14,27 +14,12 @@ class BlogsListAPI(APIView):
     """
     Endpoint que muestra el listado de blogs de la plataforma
     """
-    permission_classes = (UserPermission,)
 
     def get(self, request):
         users = User.objects.all()
         serializer = BlogsSerializer(users, many=True)
         return Response(serializer.data)
 
-
-#
-# class SignupAPII(APIView):
-#     """
-#     Endpoint de creación de usuarios
-#     """
-#
-#     def post(self, request):
-#         serializer = UserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=HTTP_201_CREATED)
-#         else:
-#             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 class SignupAPI(CreateAPIView):
     """
@@ -54,7 +39,7 @@ class UserDetailAPI(APIView):
 
     def get(self, request, blogger):
         user = get_object_or_404(User, username=blogger)
-        self.get_object_permissions(request, user)
+        self.check_object_permissions(request, user)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -73,14 +58,5 @@ class UserDetailAPI(APIView):
         self.check_object_permissions(request, user)
         user.delete()
         return Response(status=HTTP_204_NO_CONTENT)
-
-# class UserDetailAPI(RetrieveUpdateDestroyAPIView):
-#     queryset = User.objects.all()
-#     if not queryset:
-#         pass
-#     serializer_class = UserSerializer
-
-    # def get_queryset(self):
-    #     return User.objects.filter(username=self.kwargs["blogger"])
 
 

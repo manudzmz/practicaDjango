@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.utils.datetime_safe import datetime
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from post.models import Post
@@ -49,3 +50,19 @@ class PostDetailAPI(RetrieveUpdateDestroyAPIView):
         instance = get_object_or_404(queryset)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        return serializer.save(owner=self.request.user)
+
+
+class CreatePostAPI(CreateAPIView):
+    """
+    Endpoint de creación de un nuevo post (solo usuarios autenticados)
+    """
+    permission_classes = (IsAuthenticated,)
+
+    queryset = Post.objects.all()
+    serializer_class = UserPostsSerializer
+
+    def perform_create(self, serializer):
+        return serializer.save(owner=self.request.user)

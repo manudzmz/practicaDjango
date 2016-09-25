@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from post.api import UserPostsAPI, PostDetailAPI
+from post.api import UserPostsAPI, PostDetailAPI, CreatePostAPI
 from post.views import HomeView, PostDetailView, UserPostsView, CreatePostView
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     #API URLs
     url(r'^api/1.0/blogs/(?P<blogger>[a-z0-9_-]+)/$', UserPostsAPI.as_view(), name='api_usersposts'),
     url(r'^api/1.0/blogs/(?P<blogger>[a-z0-9_-]+)/(?P<pk>[0-9]+)$', PostDetailAPI.as_view(), name='api_postdetail'),
+    url(r'^api/1.0/new-post$', CreatePostAPI.as_view(), name='api_newpost'),
 ]
