@@ -10,6 +10,33 @@ from post.permissions import PostDetailPermission
 from post.serializers import UserPostsSerializer, UserPostsListsSerializer
 
 
+# class UserPostsAPI(ListAPIView):
+#     """
+#     Endpoint que muestra la lista de posts en el blog de un usuario
+#     """
+#     queryset = Post.objects.all()
+#     serializer_class = UserPostsListsSerializer
+#     filter_backends = (filters.SearchFilter, filters.OrderingFilter,)
+#     ordering_fields = ('titulo', 'fec_publicacion')
+#     search_fields = ('titulo', 'cuerpo')
+#
+#     def list(self, request, blogger):
+#         if request.user.is_authenticated and (request.user.username == blogger or request.user.is_superuser):
+#             queryset = self.get_queryset().filter(owner__username=blogger).order_by(
+#                 '-fec_publicacion')
+#         else:
+#             queryset = self.get_queryset().filter(
+#                 Q(owner__username=blogger) & Q(fec_publicacion__lte=datetime.now())).order_by(
+#                 '-fec_publicacion')
+#
+#         page = self.paginate_queryset(queryset)
+#         if page is not None:
+#             serializer = self.get_serializer(page, many=True)
+#             return self.get_paginated_response(serializer.data)
+#
+#         serializer = self.get_serializer(queryset, many=True)
+#         return Response(serializer.data)
+
 class UserPostsAPI(ListAPIView):
     """
     Endpoint que muestra la lista de posts en el blog de un usuario
