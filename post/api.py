@@ -2,67 +2,36 @@ from django.db.models import Q
 from django.utils.datetime_safe import datetime
 from rest_framework import filters
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, get_object_or_404, CreateAPIView, ListAPIView
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from post.models import Post
 from post.permissions import PostDetailPermission
 from post.serializers import UserPostsSerializer, UserPostsListsSerializer
 
 
-# class UserPostsAPI(ListAPIView):
-#     """
-#     Endpoint que muestra la lista de posts en el blog de un usuario
-#     """
-#     queryset = Post.objects.all()
-#     serializer_class = UserPostsListsSerializer
-#     filter_backends = (filters.SearchFilter, filters.OrderingFilter,)
-#     ordering_fields = ('titulo', 'fec_publicacion')
-#     search_fields = ('titulo', 'cuerpo')
-#
-#     def list(self, request, blogger):
-#         if request.user.is_authenticated and (request.user.username == blogger or request.user.is_superuser):
-#             queryset = self.get_queryset().filter(owner__username=blogger).order_by(
-#                 '-fec_publicacion')
-#         else:
-#             queryset = self.get_queryset().filter(
-#                 Q(owner__username=blogger) & Q(fec_publicacion__lte=datetime.now())).order_by(
-#                 '-fec_publicacion')
-#
-#         page = self.paginate_queryset(queryset)
-#         if page is not None:
-#             serializer = self.get_serializer(page, many=True)
-#             return self.get_paginated_response(serializer.data)
-#
-#         serializer = self.get_serializer(queryset, many=True)
-#         return Response(serializer.data)
-
-class UserPostsAPI(ListAPIView):
+class UserPostsViewSet(ListModelMixin, GenericViewSet):
     """
     Endpoint que muestra la lista de posts en el blog de un usuario
     """
-    queryset = Post.objects.all()
+
     serializer_class = UserPostsListsSerializer
     filter_backends = (filters.SearchFilter, filters.OrderingFilter,)
     ordering_fields = ('titulo', 'fec_publicacion')
     search_fields = ('titulo', 'cuerpo')
 
-    def list(self, request, blogger):
-        if request.user.is_authenticated and (request.user.username == blogger or request.user.is_superuser):
-            queryset = self.get_queryset().filter(owner__username=blogger).order_by(
+    def get_queryset(self):
+        if self.request.user.is_authenticated and (
+                self.request.user.username == self.kwargs["blogger"] or self.request.user.is_superuser):
+            queryset = Post.objects.all().filter(owner__username=self.kwargs["blogger"]).order_by(
                 '-fec_publicacion')
         else:
-            queryset = self.get_queryset().filter(
-                Q(owner__username=blogger) & Q(fec_publicacion__lte=datetime.now())).order_by(
+            queryset = Post.objects.all().filter(
+                Q(owner__username=self.kwargs["blogger"]) & Q(fec_publicacion__lte=datetime.now())).order_by(
                 '-fec_publicacion')
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return queryset
 
 
 class PostDetailAPI(RetrieveUpdateDestroyAPIView):
